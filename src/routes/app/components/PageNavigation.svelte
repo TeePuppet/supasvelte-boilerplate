@@ -8,14 +8,13 @@
     import { get } from 'svelte/store';
 
 
-    export let websiteId:string
-    export let selected:string = "/"
+	const params = get(page).params;
 
-    let items = [
-        {
-            label: "Dashboard",
-            path: "/"
-        },
+
+    export let websiteId:string = params.website
+    export let selected:string = "/posts"
+
+    export let items = [
     {
         label: "Posts",
         path: "/posts",
@@ -23,10 +22,6 @@
     {
         label: "Categories",
         path: "/categories"
-    },
-    {
-        label: "Deployments",
-        path: "/deployments"
     }
     ]
 

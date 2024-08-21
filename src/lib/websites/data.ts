@@ -1,4 +1,6 @@
-import { supabase } from '$lib/supabase/client';
+// import { supabase } from '$lib/supabase/client';
+
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Not tested
 // export const createSchema = async (schemaName: string) => {
@@ -22,16 +24,16 @@ export const getWebsite = async () => {};
 export const getConfig = async () => {};
 export const getCategories = async () => {};
 
-export const uploadFile = async (website: string, folder: string, fileName: string, file: any) => {
+export const uploadFile = async (supabase:SupabaseClient, website: string, folder: string, fileName: string, file: any) => {
     console.log('website is', website)
-    const isBucked = await checkForBucket(website);
+    const isBucked = await checkForBucket(supabase, website);
     console.log('is bucket', isBucked)
 	let bucket;
 	if (isBucked) {
 		bucket = website;
 	} else {
         console.log('creating bucket')
-		let data = await createBucket(website);
+		let data = await createBucket(supabase, website);
         console.log(data)
 		bucket = website;
 	}
@@ -52,7 +54,7 @@ export const uploadFile = async (website: string, folder: string, fileName: stri
 	// }
 };
 
-export const checkForBucket = async (website_repo: string) => {
+export const checkForBucket = async (supabase: SupabaseClient, website_repo: string) => {
     const { data: buckets, error } = await supabase.storage.listBuckets()
 	if (error) {
 		console.log('Error listing buckets:', error);
@@ -64,11 +66,10 @@ export const checkForBucket = async (website_repo: string) => {
 	}
 };
 
-export const createBucket = async (website: string) => {
+export const createBucket = async (supabase:SupabaseClient, website: string) => {
     const { data, error } = await supabase.storage.createBucket(website);
     if (error) {
         throw error;
     }
     return data;
 };
-

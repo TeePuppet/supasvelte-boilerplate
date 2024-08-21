@@ -1,15 +1,14 @@
-<script context="module" lang="ts">
-	import { supabase } from '$lib/supabase/client';
-	import * as Card from '$lib/components/ui/card';
+<script lang="ts">
+    import type { PageData } from './$types';
 
+	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import PageTitle from '../components/PageTitle.svelte';
-	// import { createSchema } from '$lib/websites/data';
-	let websiteData: any[] | null = [];
 
-	let { data: websites } = await supabase.from('websites').select('*');
-	websiteData = websites;
-	console.log(websiteData);
+    export let data: PageData;
+
+    $: ({ websites, supabase, user } = data);
+
 </script>
 
 <PageTitle title="Websites">
@@ -18,9 +17,9 @@
 </PageTitle>
 
 <div class="grid grid-cols-3 gap-4">
-    {#if websiteData}
-        {#each websiteData as website}
-            <a href={`/app/websites/${website.repo}`}>
+    {#if websites}
+        {#each websites as website}
+            <a href={`/app/websites/${website.repo}/posts`}>
                 <Card.Root>
                     <Card.Header>
                         <Card.Title class="flex items-center gap-2">

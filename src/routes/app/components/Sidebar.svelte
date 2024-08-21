@@ -3,15 +3,41 @@
 	import Sun from 'lucide-svelte/icons/sun';
 	import Moon from 'lucide-svelte/icons/moon';
 	import { toggleMode } from 'mode-watcher';
-	import { ScrollArea } from '$lib/components/ui/scroll-area';
+	
+	// import { ScrollArea } from '$lib/components/ui/scroll-area';
+	// import { logout } from '$lib/supabase/auth';
 	import { cn } from '$lib/utils.js';
+	import { goto } from '$app/navigation';
+	// import Logout from '$lib/components/Logout.svelte';
 
 	let className: string | null | undefined = undefined;
 	export { className as class };
+
+	// $: handleLogout = async () => {
+	// 					const result = await logout();
+	// 					if (result?.errors) {
+	// 						console.error(result.errors.message);
+	// 					}
+	// 				};
+
+	export let data;
+	$: ({ supabase } = data);
+
+	$: logout = async () => {
+		const { error } = await supabase.auth.signOut();
+		if (error) {
+			console.error(error);
+		}
+		goto('/')
+	};
+	
 </script>
 
-<div class={cn('pb-12', className)}>
-	<div class="space-y-4 py-4">
+<div class={cn('pb-0 h-full', className)}>
+	<div class="space-y-4 py-4 flex flex-col justify-between h-full">
+		<div>
+
+		
 		<div class="px-3 py-2">
 			<h2 class="mb-2 px-4 text-lg font-semibold tracking-normal">Library</h2>
 			<div class="space-y-1">
@@ -49,7 +75,7 @@
 					>
 					Videos
 				</Button>
-				<Button variant="ghost" class="w-full justify-start" disabled>
+				<Button variant="ghost" class="w-full justify-start" href="/app/shirts">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 24 24"
@@ -121,9 +147,11 @@
 					</svg>
 					Shirt Ideas
 				</Button>
+                
 			</div>
 		</div>
-		<div class="px-3 py-2">
+	</div>
+		<div class="px-3 py-2 flex flex-col gap-2">
 			<Button on:click={toggleMode} variant="ghost" class="w-full justify-start">
 				<Sun class="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
 				<Moon
@@ -132,6 +160,8 @@
 
 				<span class="">Theme</span>
 			</Button>
+			<Button size="sm" class="w-full" on:click={logout}>Logout</Button>
 		</div>
+        
 	</div>
 </div>

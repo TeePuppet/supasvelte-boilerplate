@@ -23,6 +23,10 @@
 			title: 'Social Media',
 			href: '#social-media'
 		},
+		{
+			title: 'Delete',
+			href: '#delete'
+		},
 	];
 
 	const [send, receive] = crossfade({
@@ -30,7 +34,7 @@
 		easing: cubicInOut
 	});
 
-
+	console.log($page.url.pathname)
 </script>
 
 <Separator/>
@@ -51,7 +55,7 @@
                     <Button
                         href={item.href}
                         variant="ghost"
-                        class={cn(!isActive && 'hover:underline', 'relative justify-start hover:bg-transparent')}
+                        class={cn(!isActive && 'hover:underline', 'relative justify-start')}
                         data-sveltekit-noscroll
                     >
                         {#if isActive}

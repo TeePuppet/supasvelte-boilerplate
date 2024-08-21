@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { supabase } from '$lib/supabase/client';
+     import type { PageData } from './$types';
+    // import { supabase } from '$lib/supabase/client';
 	import PageTitle from "../../components/PageTitle.svelte";
     import { Input } from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
@@ -9,6 +10,11 @@
 	import { goto } from '$app/navigation';
 	import { deployWebsite } from '$lib/websites/vercel';
 	import { createBucket } from '$lib/websites/data';
+
+    export let data: PageData;
+    console.log(data)
+    $: ({ supabase, user } = data);
+
 
     let isLoading = false
     $: websiteName = '';
@@ -28,8 +34,8 @@
             } else {
                 console.log('Website added to database:', data);
             }
-        await createBucket(repo);
-        await deployWebsite(repo);
+        await createBucket(supabase, repo);
+        await deployWebsite(supabase, repo);
         goto(`/app/websites/${repo}`);
 
         // console.log('update file', updateFile)
