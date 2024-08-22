@@ -9,10 +9,6 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
-		env: {
-			publicPrefix: 'PUBLIC_'
-		  },
-
 		alias: {
 			"@/*": "./path/to/lib/*",
 		  },
