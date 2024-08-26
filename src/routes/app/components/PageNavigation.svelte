@@ -17,18 +17,18 @@
     export let items = [
     {
         label: "Posts",
-        path: "/posts",
+        path: `websites/${websiteId}/posts`,
     },
     {
         label: "Categories",
-        path: "/categories"
+        path: `websites/${websiteId}/categories`
     }
     ]
 
     
 </script>
 
-<Tabs.Root bind:value={selected} onValueChange={(value) => goto(`/app/websites/${websiteId}${value}`)}>
+<Tabs.Root bind:value={selected} onValueChange={(value) => goto(`/app/${value}`)}>
 	<Tabs.List>
         {#each items as item}
             <Tabs.Trigger value={item.path}>{item.label}</Tabs.Trigger>

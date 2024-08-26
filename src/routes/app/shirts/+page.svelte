@@ -3,7 +3,9 @@
 import PageNavigation from "../components/PageNavigation.svelte";
 	import PageTitle from "../components/PageTitle.svelte";
 
+// @ts-ignore
 	$: ({ supabase, user } = data);
+
 
 	export let data
 	const shirts = data.shirts
@@ -11,15 +13,19 @@ import PageNavigation from "../components/PageNavigation.svelte";
 	const pageNavItems = [
     {
         label: "Designs",
-        path: "/",
+        path: "shirts/",
+    },
+	{
+        label: "Trending",
+        path: "shirts/trending",
     },
     {
         label: "Upload Queue",
-        path: "/upload"
+        path: "shirts/upload"
     },
 	{
         label: "Accounts",
-        path: "/accounts"
+        path: "shirts/accounts"
     }
 	]
 
@@ -28,8 +34,10 @@ const fetchUrl = async () => {
   return response;
 };
 
+// @ts-ignore
 const markAsDone = async (id) => {
 	const schema = supabase.schema('shirts');
+  // @ts-ignore
   const { data, error } = await schema
     .from('shirts')
     .update({ draft: true })
@@ -48,7 +56,7 @@ const markAsDone = async (id) => {
 </PageTitle>
 
 <div class="flex justify-between items-center">
-	<PageNavigation  items={pageNavItems} selected="/"/>
+	<PageNavigation  items={pageNavItems} selected="shirts/"/>
 	<Button on:click={fetchUrl}>Generate Ideas</Button>
 </div>
 
