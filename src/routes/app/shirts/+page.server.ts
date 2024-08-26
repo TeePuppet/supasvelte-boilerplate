@@ -1,23 +1,23 @@
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ depends, locals: { supabase } }) => {
-	depends('supabase:db:websites');
+	depends('supabase:db:shirts');
 
     try {
         const schema = supabase.schema('shirts');
-        console.log('schema', schema);
 
-        const { data: websites, error } = await schema.from('trending').select('*');
+        const { data: shirts, error } = await schema
+            .from('shirts')
+            .select('*')
 
         if (error) {
             console.error('Error fetching websites:', error);
-            return { websites: [] };
+            return { shirts: [] };
         }
-
-        console.log('Fetched websites:', websites);
-        return { websites: websites ?? [] };
+        
+        return { shirts: shirts ?? [] };
     } catch (e) {
         console.error('Unexpected error:', e);
-        return { websites: [] };
+        return { shirts: [] };
     }
 };
