@@ -3,6 +3,8 @@
 import PageNavigation from "../components/PageNavigation.svelte";
 	import PageTitle from "../components/PageTitle.svelte";
 
+	$: ({ supabase, user } = data);
+
 	export let data
 	const shirts = data.shirts
 	console.log('data is', shirts)
@@ -26,6 +28,19 @@ const fetchUrl = async () => {
   return response;
 };
 
+const markAsDone = async (id) => {
+	const schema = supabase.schema('shirts');
+  const { data, error } = await schema
+    .from('shirts')
+    .update({ draft: true })
+    .eq('id', id)
+
+  if (error) {
+    console.error('Error updating shirt status:', error);
+  } else {
+    console.log('Shirt status updated successfully');
+  }
+}
 
 
 </script>
@@ -50,7 +65,12 @@ const fetchUrl = async () => {
 			<p class="text-sm text-muted-foreground">{shirt.tags}</p>
 			<h3 class="text-sm font-medium">Prompt</h3>
 			<p class="text-sm text-muted-foreground">{shirt.design_desc}</p>
-			
+			<Button
+				on:click={() => markAsDone(shirt.id)}
+				variant="default"
+			>
+				Done
+			</Button>
 		</div>
 	{/each}
 </div>
