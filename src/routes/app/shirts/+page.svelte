@@ -6,6 +6,8 @@ import PageNavigation from "../components/PageNavigation.svelte";
 	import { Portal } from "$lib/components/ui/dialog";
 	import Input from "$lib/components/ui/input/input.svelte";
 	import PageNav from '$lib/components/PageNav.svelte';
+	import Label from "$lib/components/ui/label/label.svelte";
+	import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
 const pageNavItems = [
 {
@@ -82,12 +84,19 @@ const markAsDone = async (id) => {
 			<Drawer.Overlay class="fixed inset-0 bg-black/40" />
 			<Drawer.Content class=" flex flex-col fixed bottom-0 left-0 right-0 max-h-[96%] rounded-t-[10px]">
 				<div class="max-w-md w-full mx-auto flex flex-col gap-4 overflow-auto p-4 rounded-t-[10px]">
+					<img src="https://placehold.co/400x400"/>
+					<Label>Title</Label>
 					<Input value={shirt.listing_title}/>
-					<Input value={shirt.listing_desc}/>
+					<Label>Description</Label>
+					<Textarea value={shirt.listing_desc}/>
 					<Input value={shirt.design_text}/>
 					<Input value={shirt.desc}/>
 					
 				</div>
+				<Drawer.Footer>
+					<Button>Upload</Button>
+					<Button variant="secondary">Cancel</Button>
+				</Drawer.Footer>
 			</Drawer.Content>
 		</Drawer.Portal>
 	</Drawer.Root>

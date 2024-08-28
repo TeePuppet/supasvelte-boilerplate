@@ -19,6 +19,7 @@
         path: "/app/shirts/accounts"
     }
 	]
+    
 </script>
 
 <PageNav items={pageNavItems} selected="/app/shirts/accounts"/>

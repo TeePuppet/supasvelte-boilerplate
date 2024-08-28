@@ -21,3 +21,5 @@ export const load: PageServerLoad = async ({ depends, locals: { supabase } }) =>
         return { shirts: [] };
     }
 };
+
+
