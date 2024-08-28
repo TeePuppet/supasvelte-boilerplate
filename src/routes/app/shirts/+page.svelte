@@ -2,32 +2,37 @@
 	import Button from "$lib/components/ui/button/button.svelte";
 import PageNavigation from "../components/PageNavigation.svelte";
 	import PageTitle from "../components/PageTitle.svelte";
+	import * as Drawer from "$lib/components/ui/drawer";
+	import { Portal } from "$lib/components/ui/dialog";
+	import Input from "$lib/components/ui/input/input.svelte";
+	import PageNav from '$lib/components/PageNav.svelte';
 
-// @ts-ignore
+const pageNavItems = [
+{
+	label: "Designs",
+	path: "/app/shirts/",
+},
+{
+	label: "Trending",
+	path: "/app/shirts/trending",
+},
+{
+	label: "Upload Queue",
+	path: "/app/shirts/upload"
+},
+{
+	label: "Accounts",
+	path: "/app/shirts/accounts"
+}
+]
+	// @ts-ignore
 	$: ({ supabase, user } = data);
 
 
 	export let data
 	const shirts = data.shirts
 	console.log('data is', shirts)
-	const pageNavItems = [
-    {
-        label: "Designs",
-        path: "shirts/",
-    },
-	{
-        label: "Trending",
-        path: "shirts/trending",
-    },
-    {
-        label: "Upload Queue",
-        path: "shirts/upload"
-    },
-	{
-        label: "Accounts",
-        path: "shirts/accounts"
-    }
-	]
+	
 
 const fetchUrl = async () => {
   const response = await fetch('https://sil.app.n8n.cloud/webhook/053c5823-013b-43c0-9040-37fb8dc59e14');
@@ -52,33 +57,32 @@ const markAsDone = async (id) => {
 
 
 </script>
-<PageTitle title="Shirts">
-</PageTitle>
 
-<div class="flex justify-between items-center">
-	<PageNavigation  items={pageNavItems} selected="shirts/"/>
-	<Button on:click={fetchUrl}>Generate Ideas</Button>
-</div>
+
+
+<PageNav items={pageNavItems} selected="/app/shirts/"/>
 
 <div class="grid grid-cols-1 gap-4 mt-6">
+
+
 	{#each shirts as shirt }
-		<div class="flex flex-col border p-4 rounded gap-2">
-			<h3 class="text-sm font-medium">Title</h3>
-			<p class="text-sm text-muted-foreground">{shirt.listing_title}</p>
-			<h3 class="text-sm font-medium">Desc</h3>
-			<p class="text-sm text-muted-foreground">{shirt.listing_desc}</p>
-			<h3 class="text-sm font-medium">Main Tag</h3>
-			<p class="text-sm text-muted-foreground">{shirt.keyword}</p>
-			<h3 class="text-sm font-medium">Tags</h3>
-			<p class="text-sm text-muted-foreground">{shirt.tags}</p>
-			<h3 class="text-sm font-medium">Prompt</h3>
-			<p class="text-sm text-muted-foreground">{shirt.design_desc}</p>
-			<Button
-				on:click={() => markAsDone(shirt.id)}
-				variant="default"
-			>
-				Done
-			</Button>
-		</div>
+	<Drawer.Root>
+		<Drawer.Trigger>
+			Open Drawer
+		</Drawer.Trigger>
+		<Drawer.Portal>
+			<Drawer.Overlay class="fixed inset-0 bg-black/40" />
+			<Drawer.Content class=" flex flex-col fixed bottom-0 left-0 right-0 max-h-[96%] rounded-t-[10px]">
+				<div class="max-w-md w-full mx-auto flex flex-col gap-4 overflow-auto p-4 rounded-t-[10px]">
+					<Input value={shirt.listing_title}/>
+					<Input value={shirt.listing_desc}/>
+					<Input value={shirt.design_text}/>
+					<Input value={shirt.desc}/>
+					
+				</div>
+			</Drawer.Content>
+		</Drawer.Portal>
+	</Drawer.Root>
+		
 	{/each}
 </div>

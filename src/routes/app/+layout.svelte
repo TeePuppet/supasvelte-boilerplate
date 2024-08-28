@@ -11,7 +11,7 @@
 
 </script>
 
-<main class="hidden md:block h-full">
+<main class="md:block h-full">
 	<div class="h-full">
 		<div class="bg-background h-full">
 			<div class="h-full">

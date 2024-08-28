@@ -1,37 +1,34 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
-	import PageNavigation from '../../components/PageNavigation.svelte';
+	import PageNav from '$lib/components/PageNav.svelte';
 	import PageTitle from '../../components/PageTitle.svelte';
 
 	export let data;
     const keywords = data.keywords
-	console.log(data);
 
 	const pageNavItems = [
-		{
-			label: 'Designs',
-			path: 'shirts/'
-		},
-		{
-			label: 'Trending',
-			path: 'shirts/trending'
-		},
-		{
-			label: 'Upload Queue',
-			path: 'shirts/upload'
-		},
-		{
-			label: 'Accounts',
-			path: 'shirts/accounts'
-		}
-	];
+{
+    label: "Designs",
+    path: "/app/shirts/",
+},
+{
+    label: "Trending",
+    path: "/app/shirts/trending",
+},
+{
+    label: "Upload Queue",
+    path: "/app/shirts/upload"
+},
+{
+    label: "Accounts",
+    path: "/app/shirts/accounts"
+}
+]
 </script>
 
-<PageTitle title="Shirts"></PageTitle>
 
-<div class="flex items-center justify-between">
-	<PageNavigation items={pageNavItems} selected="shirts/trending" />
-</div>
+<PageNav items={pageNavItems} selected="/app/shirts/trending"/>
+
 
 <div class="mt-6 grid grid-cols-1 gap-2">
     {#if keywords && Array.isArray(keywords)}
