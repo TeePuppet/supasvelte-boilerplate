@@ -68,7 +68,15 @@ const markAsDone = async (id) => {
 	{#each shirts as shirt }
 	<Drawer.Root>
 		<Drawer.Trigger>
-			Open Drawer
+			<div class="border-2 rounded-lg text-left overflow-hidden">
+				<img src="https://placehold.co/400x400"/>
+				<div class="p-4 flex flex-col gap-2">
+					<h2 class="text-sm font-medium">{shirt.listing_title}</h2>
+					<p class="text-muted-foreground text-sm"><span class="text-foreground font-medium">{shirt.keyword}</span>{#each shirt.tags as tag}
+						<span>, {tag}</span>
+					{/each} </p>
+				</div>
+			</div>
 		</Drawer.Trigger>
 		<Drawer.Portal>
 			<Drawer.Overlay class="fixed inset-0 bg-black/40" />
