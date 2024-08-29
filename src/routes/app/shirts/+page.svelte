@@ -73,14 +73,14 @@
 				<Drawer.Portal>
 					<Drawer.Overlay class="fixed inset-0 bg-black/40" />
 					<Drawer.Content
-						class="fixed bottom-0 left-0 right-0 flex max-h-[96%] flex-col rounded-t-[10px]"
+						class="fixed  bottom-0 left-0 right-0 flex max-h-[96%] flex-col rounded-t-[10px]"
 					>
 						<div
-							class="mx-auto flex w-full max-w-md flex-col gap-4 overflow-auto rounded-t-[10px] p-4"
+							class=" mx-auto flex w-full max-w-md flex-col gap-4 overflow-auto rounded-t-[10px] p-4"
 						>	
 						<div class="relative">
-							<img src="https://placehold.co/400x400" />
-							<Button>Refresh</Button>
+							<img class="rounded-lg overflow-hidden" src="https://placehold.co/400x400" />
+							<Button class="absolute bottom-2 right-2">Refresh</Button>
 						</div>
 							
 							<h2 contenteditable="true" class="font-medium">{shirt.listing_title}</h2>
