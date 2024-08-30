@@ -47,7 +47,7 @@
 
 <div class="mt-16 grid grid-cols-1 gap-3 md:grid-cols-3 w-full px-4">
 	<h2 class="font-medium text-lg" contenteditable="true">{shirt.listing_title}</h2>
-	<p contenteditable="true" class="focus outline-none mb-3"><span class="px-4 py-1 bg-muted text-muted-foreground rounded border border-muted-foreground focus outline-none" >{shirt.keyword}</span></p>
+	<p  class="focus outline-none mb-3"><span class="px-4 py-1 bg-muted text-muted-foreground rounded border border-muted-foreground focus outline-none" contenteditable="true">{shirt.keyword}</span></p>
 	<div class="relative">
 		<img class="block w-full object-cover object-center rounded-lg" src="https://placehold.co/400x400" alt="Shirt design" />
 		<Button variant="secondary" size="icon" class="absolute top-2 right-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></Button>
