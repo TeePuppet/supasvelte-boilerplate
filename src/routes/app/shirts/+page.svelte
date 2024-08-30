@@ -31,8 +31,8 @@
 	$: ({ supabase, user } = data);
 
 	export let data;
-	const shirts = data.shirts;
-	console.log('data is', shirts);
+	const shirt = data.shirts[0];
+	console.log(shirt)
 
 	const fetchUrl = async () => {
 		const response = await fetch(
@@ -41,25 +41,48 @@
 		return response;
 	};
 
-	// @ts-ignore
-	const markAsDone = async (id) => {
-		const schema = supabase.schema('shirts');
-		// @ts-ignore
-		const { data, error } = await schema.from('shirts').update({ draft: true }).eq('id', id);
-
-		if (error) {
-			console.error('Error updating shirt status:', error);
-		} else {
-			console.log('Shirt status updated successfully');
-		}
-	};
 </script>
 
 <PageNav items={pageNavItems} selected="/app/shirts/" />
 
 <div class="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3 w-full">
-	{#each shirts as shirt}
-		<Drawer.Root>
+	<h2 class="font-medium text-lg" contenteditable="true">{shirt.listing_title}</h2>
+	<p class="mb-3" contenteditable="true"><span class="px-4 py-1 bg-muted text-muted-foreground rounded border border-muted-foreground" >{shirt.keyword}</span></p>
+	<div class="relative">
+		<img class="block w-full object-cover object-center rounded-lg" src="https://placehold.co/400x400" alt="Shirt design" />
+		<Button variant="secondary" size="icon" class="absolute top-2 right-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></Button>
+		<Button size="sm" class="absolute bottom-2 right-2">Remove Background</Button>
+		<Button variant="secondary" size="icon" class="absolute top-2 left-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></Button>
+	</div>
+
+	<div class="flex justify-between items-center">
+		<h3 class="font-medium">Tags</h3>
+		<Button variant="outline" size="icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></Button>
+	</div>
+
+	<section class="border p-4 rounded">
+
+	<div class="flex flex-wrap gap-2">
+		{#each shirt.tags as tag}
+		<span class="px-4 py-1 bg-muted text-muted-foreground rounded border border-muted-foreground whitespace-nowrap" contenteditable="true">{tag}</span>
+		{/each}
+		
+	</div>
+	</section>
+
+	<div class="flex justify-between items-center">
+		<h3 class="font-medium">Description</h3>
+		<Button variant="outline" size="icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></Button>
+	</div>
+	<section class="border p-4 rounded"><p contenteditable="true">{shirt.listing_desc}</p></section>
+
+	<div class="flex gap-2">
+		
+		<Button variant="secondary">Delete</Button>
+		<Button class="flex-1">Upload</Button>
+	</div>
+
+		<!-- <Drawer.Root>
 				<div class="relative">
 				<Drawer.Trigger class="block">
 					<div class="overflow-hidden rounded-lg text-left w-full aspect-square object-cover object-center">
@@ -108,6 +131,6 @@
 					</Drawer.Content>
 				</Drawer.Portal>
 			</Drawer.Root
-		>
-	{/each}
+		> -->
+
 </div>
