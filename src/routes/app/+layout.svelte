@@ -16,10 +16,10 @@
 		<div class="bg-background h-full">
 			<div class="h-full">
 				
-				<Sidebar class="hidden lg:block h-full fixed left-0 top-0 w-56 overflow-y-auto border-r" data={data}/>
+				<!-- <Sidebar class="hidden lg:block h-full fixed left-0 top-0 w-56 overflow-y-auto border-r" data={data}/> -->
 
-				<div class="lg:ml-56 overflow-y-auto h-full">
-					<div class="h-full px-4 py-4 lg:px-8">
+				<div class="overflow-y-auto h-full max-w-5xl mx-auto">
+					<div class="h-full">
 						<slot />
 					</div>
 				</div>

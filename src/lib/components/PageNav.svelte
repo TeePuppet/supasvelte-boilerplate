@@ -66,23 +66,11 @@
     }
 </script>
 
-<div class="flex overflow-x-auto no-scrollbar gap-2" bind:this={containerRef}>
-	<Button variant="secondary" size="sm" on:click={() => window.history.back()}>
-		<svg 
-			xmlns="http://www.w3.org/2000/svg" 
-			width="24" 
-			height="24" 
-			viewBox="0 0 24 24" 
-			fill="none" 
-			stroke="currentColor" 
-			stroke-width="2" 
-			stroke-linecap="round" 
-			stroke-linejoin="round" 
-			class="lucide lucide-arrow-left">
-			<path d="m12 19-7-7 7-7" />
-			<path d="M19 12H5" />
-		</svg>
+<div class="flex overflow-x-auto no-scrollbar gap-2 absolute top-0 z-20 pl-4 py-4 bg-gradient-to-b from-black via-black to-black/0">
+	<Button variant="secondary" size="sm" href="/app/">
+		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
 	</Button>
+    <div class="flex overflow-x-auto no-scrollbar gap-2 pr-4" bind:this={containerRef}>
     {#each items as item}
         <Button 
             variant={selected === item.path ? 'default' : 'secondary'} 
@@ -92,4 +80,5 @@
             {item.label}
         </Button>
     {/each}
+    </div>
 </div>

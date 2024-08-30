@@ -45,14 +45,14 @@
 
 <PageNav items={pageNavItems} selected="/app/shirts/" />
 
-<div class="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3 w-full">
+<div class="mt-16 grid grid-cols-1 gap-3 md:grid-cols-3 w-full px-4">
 	<h2 class="font-medium text-lg" contenteditable="true">{shirt.listing_title}</h2>
 	<p class="mb-3" contenteditable="true"><span class="px-4 py-1 bg-muted text-muted-foreground rounded border border-muted-foreground" >{shirt.keyword}</span></p>
 	<div class="relative">
 		<img class="block w-full object-cover object-center rounded-lg" src="https://placehold.co/400x400" alt="Shirt design" />
-		<Button variant="secondary" size="icon" class="absolute top-2 right-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></Button>
+		<Button variant="secondary" size="icon" class="absolute top-2 right-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></Button>
 		<Button size="sm" class="absolute bottom-2 right-2">Remove Background</Button>
-		<Button variant="secondary" size="icon" class="absolute top-2 left-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></Button>
+		<Button variant="secondary" size="icon" class="absolute top-2 left-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></Button>
 	</div>
 
 	<div class="flex justify-between items-center">
@@ -76,12 +76,27 @@
 	</div>
 	<section class="border p-4 rounded"><p contenteditable="true">{shirt.listing_desc}</p></section>
 
-	<div class="flex gap-2">
+	<section class="fixed left-0 right-0 bottom-0">
+		<!-- Gradient blur background -->
+		<div 
+		  class="absolute inset-0 overflow-hidden"
+		  style="
+			-webkit-mask-image: linear-gradient(to top, black, transparent);
+			mask-image: linear-gradient(to top, black, transparent);
+		  "
+		>
+		  <div class="absolute inset-0 backdrop-blur-md bg-gradient-to-t from-black via-black/50 to-transparent" />
+		</div>
 		
-		<Button variant="secondary">Delete</Button>
-		<Button class="flex-1">Upload</Button>
-	</div>
-
+		<!-- Content (buttons) -->
+		<div class="relative z-10">
+		  <div class="flex gap-2 px-4 py-4">
+			<Button variant="secondary">Delete</Button>
+			<Button class="flex-1">Upload</Button>
+		  </div>
+		</div>
+	  </section>
+	  
 		<!-- <Drawer.Root>
 				<div class="relative">
 				<Drawer.Trigger class="block">
