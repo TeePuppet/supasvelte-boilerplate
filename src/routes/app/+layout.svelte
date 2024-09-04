@@ -11,15 +11,15 @@
 
 </script>
 
-<main class="md:block h-full">
+<main class="md:block h-full l">
 	<div class="h-full">
 		<div class="bg-background h-full">
 			<div class="h-full">
 				
 				<!-- <Sidebar class="hidden lg:block h-full fixed left-0 top-0 w-56 overflow-y-auto border-r" data={data}/> -->
 
-				<div class="overflow-y-auto h-full max-w-5xl mx-auto">
-					<div class="h-full">
+				<div class="h-full max-w-5xl mx-auto">
+					<div class="h-full w-ful">
 						<slot />
 					</div>
 				</div>

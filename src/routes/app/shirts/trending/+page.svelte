@@ -30,7 +30,7 @@
 <PageNav items={pageNavItems} selected="/app/shirts/trending"/>
 
 
-<div class="mt-6 grid grid-cols-1 gap-2">
+<div class="mt-6 grid grid-cols-1 gap-2 w-full">
     {#if keywords && Array.isArray(keywords)}
         {#each keywords as item}
         <a href={`https://www.teepublic.com/t-shirts?query=${encodeURIComponent(item.keyword)}`} target="_blank" rel="noopener noreferrer" class="flex border px-4 py-2 rounded justify-between items-center text-sm">

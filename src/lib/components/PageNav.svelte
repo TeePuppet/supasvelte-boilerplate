@@ -67,19 +67,7 @@
 	}
 </script>
 
-<div class="fixed top-0  w-full z-20">
-	<!-- Gradient blur background -->
-	<div
-		class="absolute inset-0 overflow-hidden"
-		style="
-        -webkit-mask-image: linear-gradient(to botton, black 70%, transparent);
-        mask-image: linear-gradient(to bottom, black 70%, transparent);
-      "
-	>
-		<div
-			class="absolute inset-0 bg-gradient-to-b from-black via-black to-black/0 backdrop-blur-md"
-		/>
-	</div>
+<div class=" w-full z-20">
 
 	<!-- Content (buttons) -->
 	<div class="no-scrollbar relative z-20 flex w-full gap-2 overflow-x-hidden py-4 pl-4">

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
 	import PageNavigation from '../components/PageNavigation.svelte';
 	import PageTitle from '../components/PageTitle.svelte';
@@ -8,6 +8,7 @@
 	import PageNav from '$lib/components/PageNav.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import CheckeredBackground from '$lib/components/atoms/CheckeredBackground.svelte';
 
 	const pageNavItems = [
 		{
@@ -31,121 +32,301 @@
 	$: ({ supabase, user } = data);
 
 	export let data;
-	const shirt = data.shirts[0];
-	console.log(shirt)
+// With these lines:
+$: newShirts = data.shirts || [];
+$: shirt = newShirts[1] || newShirts[0] || null;
 
-	const fetchUrl = async () => {
+$: shirtImage = shirt?.artwork || ''
+$: shirtColor = "transparent"
+$: console.log('shirt is', shirt);
+
+	const publishDesign = async (id:number, artwork:string, title: string, main_tag:string, tags:string[], desc:string) => {
 		const response = await fetch(
-			'https://sil.app.n8n.cloud/webhook/053c5823-013b-43c0-9040-37fb8dc59e14'
+			'http://n8n.silviu.co.uk:5678/webhook/8b643479-c9bb-471e-a538-51f320182234',
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					account_cookie: `_scid=9e4e7244-78d3-4607-f4cb-219e3fe0a475; FPID=FPID2.2.llrP%2FUKVeTQnN3diB9B97a%2BIVq7kXVBLWqCrTXSOkEU%3D.1702535399; rs_anonymous_id=eyJfcmFpbHMiOnsibWVzc2FnZSI6Iklsd2laVFJqTURrek1XWXROak15TlMwMFptTTBMV0U0T1RJdFlqSXpNVEkwTVRNMk5URmhYQ0lpIiwiZXhwIjoiMjAyNS0wNi0yNFQwOTo1MzowMC4wNzdaIiwicHVyIjpudWxsfX0%3D--0bbae6f9e57ae8aa7115c9b426b3b3d15669cbe6; uploaderFunnel=single; __cf_bm=H4xAOTUS_jtTZxjPTdkY_XP9jwqZN8dvU8G.3x806Mw-1725431558-1.0.1.1-5GJJJqqXBudYGist4WLT4cSEEJV3L1zIyNhBixSOBoswGOSxrtU8b_tH9vLRbJo1PX5Rah0VkSLZTst2NeYqOQ; rs_user_id=IlwiOTQ0NDlhY2E5Y2VhMWYxMDQ0N2E0MDk3ZThlZjhiZmRiYTU1NTRmMVwiIg%3D%3D--c1edba4bed1b3ba5df2e0b4ea37dbb6c25a26db8; _session_id=4074632f0ab7ff9e112124b9037bb073; csrf_token=%2BK6cZzwrQA7%2FAI7qTfw%2B2qAkkQNZZComvju4pZHvvFX5QVg3eeUTm35uFQzlMCxq7XXDA92hbVCX4%2FmmxeHCeQ%3D%3D`,
+					artwork_url: artwork,
+					design_title: title,
+					main_tag: main_tag,
+					tags: tags,
+					design_desc: desc
+				})
+			}
 		);
+
+		if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        console.log('Design published successfully');
+
+		const schema = supabase.schema('shirts');
+
+        // Update the shirt status to "UPLOADED"
+        const { data, error } = await schema
+            .from('shirts')
+            .update({ status: 'UPLOADED' })
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            console.error('Error updating shirt status:', error);
+            throw error;
+        }
+
+
+			// Fetch updated list of shirts
+			const { data: shirts, error: fetchError } = await schema
+				.from('shirts')
+				.select('*')
+				.eq('status', 'DRAFT');
+
+			console.log(shirts)
+			if (fetchError) {
+				console.error('Error fetching shirts:', fetchError);
+				throw fetchError;
+			}
+			newShirts = shirts;
+
+
 		return response;
 	};
 
+	const deleteDesign = async (id:number) => {
+		try {
+			// Delete the shirt
+			const schema = supabase.schema('shirts');
+			const { data, error } = await schema.from('shirts').delete().eq('id', id);
+
+			if (error) {
+				console.error('Error deleting shirt:', error);
+				throw error;
+			}
+
+			console.log('Shirt deleted successfully');
+
+			// Fetch updated list of shirts
+			const { data: shirts, error: fetchError } = await schema
+				.from('shirts')
+				.select('*')
+				.eq('status', 'DRAFT');
+
+			console.log(shirts)
+			if (fetchError) {
+				console.error('Error fetching shirts:', fetchError);
+				throw fetchError;
+			}
+			newShirts = shirts;
+		} catch (err) {
+			console.error('Unexpected error:', err);
+			throw err;
+		}
+	};
+
+	const removeBG = async (image:string) => {
+		try {
+			const response = await fetch(
+			'http://n8n.silviu.co.uk:5678/webhook/remove-bg',
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					image: image
+				})
+			}
+		);
+
+		if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+		const img = await response.json()
+		console.log(img)
+			shirtImage = img.image.url
+
+		console.log('Image changed')
+		} catch (err) {
+			console.error('Unexpected error:', err);
+			throw err;
+		}
+	};
+	
+	const generateShirts = async () => {
+		const response = await fetch(
+			'http://n8n.silviu.co.uk:5678/webhook/053c5823-013b-43c0-9040-37fb8dc59e14',
+			{
+				method: 'GET',
+			}
+		);
+	}
 </script>
 
 <PageNav items={pageNavItems} selected="/app/shirts/" />
+{#if shirt}
+<div class="mt-24 grid w-full grid-cols-1 md:grid-cols-2 gap-3 px-4">
+	<div class="relative md:col-start-1 md:row-span-6">
+		<CheckeredBackground color={shirtColor}>
+			<img
+				class={`block w-full rounded-lg object-cover object-center`}
+				src={shirtImage}
+				alt="Shirt design"
+			/>
+		</CheckeredBackground>
+		<div>
+			<Button size="sm" variant="outline" on:click={() => shirtColor = "Transparent"}>Transparent</Button>
+			<Button size="sm" variant="outline" on:click={() => shirtColor = "#FFFFFF"}>White</Button>
+			<Button size="sm" variant="outline" on:click={() => shirtColor = "#000000"}>Black</Button>
 
-<div class="mt-24 grid grid-cols-1 gap-3 md:grid-cols-3 w-full px-4">
-	<h2 class="font-medium text-lg" contenteditable="true">{shirt.listing_title}</h2>
-	<p class="focus outline-none mb-3"><span class="px-4 py-1 bg-muted text-muted-foreground rounded border border-muted-foreground focus outline-none" contenteditable="true">{shirt.keyword}</span></p>
-	<div class="relative">
-		<img class="block w-full object-cover object-center rounded-lg" src="https://placehold.co/400x400" alt="Shirt design" />
-		<Button variant="secondary" size="icon" class="absolute top-2 right-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></Button>
-		<Button size="sm" class="absolute bottom-2 right-2">Remove Background</Button>
-		<Button variant="secondary" size="icon" class="absolute top-2 left-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></Button>
+			<Button size="sm" variant="default" on:click={() => removeBG(shirt.artwork)}>Remove BG</Button>
+		</div>
+		<Drawer.Root>
+			<Drawer.Trigger class="block">
+				<Button variant="secondary" size="icon" class="absolute right-2 top-2">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="lucide lucide-refresh-cw"
+					>
+						<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+						<path d="M21 3v5h-5" />
+						<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+						<path d="M8 16H3v5" />
+					</svg>
+				</Button>
+			</Drawer.Trigger>
+
+			<Drawer.Portal>
+				<Drawer.Overlay class="fixed inset-0 bg-black/40" />
+				<Drawer.Content
+					class="fixed bottom-0 left-0 right-0 flex max-h-[96%] flex-col rounded-t-[10px]"
+				>
+					<div
+						class="mx-auto flex w-full max-w-md flex-col gap-4 overflow-auto rounded-t-[10px] p-4"
+					>
+						<Label>Prompt</Label>
+						<Textarea class="h-full min-h-[400px]" bind:value={shirt.prompt} />
+					</div>
+					<Drawer.Footer>
+						<div
+							class="mx-auto flex w-full max-w-full flex-col gap-4 overflow-auto rounded-t-[10px] p-4"
+						>
+							<div class="flex w-full flex-1 gap-2">
+								<Button variant="secondary">Cancel</Button>
+								<Button class="flex-grow">Regenerate</Button>
+							</div>
+						</div>
+					</Drawer.Footer>
+				</Drawer.Content>
+			</Drawer.Portal>
+		</Drawer.Root>
 	</div>
 
-	<div class="flex justify-between items-center">
+	<h2 class="text-lg font-medium md:col-start-2" contenteditable="true">{shirt.title}</h2>
+	<p class="focus mb-3 outline-none md:col-start-2">
+		<span
+			class="focus rounded border border-muted-foreground bg-muted px-4 py-1 text-muted-foreground outline-none"
+			contenteditable="true">{shirt.main_tag}</span
+		>
+	</p>
+
+	<div class="flex items-center justify-between md:col-start-2">
 		<h3 class="font-medium">Tags</h3>
-		<Button variant="outline" size="icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></Button>
+		<Button variant="outline" size="icon">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="lucide lucide-refresh-cw"
+			>
+				<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+				<path d="M21 3v5h-5" />
+				<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+				<path d="M8 16H3v5" />
+			</svg>
+		</Button>
 	</div>
 
-	<section class="border p-4 rounded">
-
-	<div class="flex flex-wrap gap-2">
-		{#each shirt.tags as tag}
-		<span class="px-4 py-1 bg-muted text-muted-foreground rounded border border-muted-foreground whitespace-nowrap focus outline-none" contenteditable="true">{tag}</span>
-		{/each}
-		
-	</div>
+	<section class="rounded border p-4 md:col-start-2">
+		<div class="flex flex-wrap gap-2">
+			{#each shirt.tags as tag}
+				<span
+					class="focus whitespace-nowrap rounded border border-muted-foreground bg-muted px-4 py-1 text-muted-foreground outline-none"
+					contenteditable="true">{tag}</span
+				>
+			{/each}
+		</div>
 	</section>
 
-	<div class="flex justify-between items-center">
+	<div class="flex items-center justify-between md:col-start-2">
 		<h3 class="font-medium">Description</h3>
-		<Button variant="outline" size="icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></Button>
+		<Button variant="outline" size="icon">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="lucide lucide-refresh-cw"
+			>
+				<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+				<path d="M21 3v5h-5" />
+				<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+				<path d="M8 16H3v5" />
+			</svg>
+		</Button>
 	</div>
-	<section class="border p-4 rounded  mb-24"><p class="focus outline-none" contenteditable="true">{shirt.listing_desc}</p></section>
+	<section class="mb-24 rounded border p-4 md:col-start-2">
+		<p class="focus outline-none" contenteditable="true">{shirt.desc}</p>
+	</section>
 
-	<section class="fixed left-0 right-0 bottom-0">
+	<section class="fixed bottom-0 left-0 right-0 md:col-span-2">
 		<!-- Gradient blur background -->
-		<div 
-		  class="absolute inset-0 overflow-hidden"
-		  style="
+		<div
+			class="absolute inset-0 overflow-hidden"
+			style="
 			-webkit-mask-image: linear-gradient(to top, black, transparent);
 			mask-image: linear-gradient(to top, black, transparent);
 		  "
 		>
-		  <div class="absolute inset-0 backdrop-blur-md bg-gradient-to-t from-black via-black/50 to-transparent" />
+			<div
+				class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent backdrop-blur-md"
+			/>
 		</div>
-		
+
 		<!-- Content (buttons) -->
 		<div class="relative z-10">
-		  <div class="flex gap-2 px-4 py-4">
-			<Button variant="secondary">Delete</Button>
-			<Button class="flex-1">Upload</Button>
-		  </div>
-		</div>
-	  </section>
-	  
-		<!-- <Drawer.Root>
-				<div class="relative">
-				<Drawer.Trigger class="block">
-					<div class="overflow-hidden rounded-lg text-left w-full aspect-square object-cover object-center">
-						<img class="block w-full object-cover object-center" src="https://placehold.co/400x400" alt="Shirt design" />
-						<div class="absolute left-2 top-2 z-10 flex flex-col gap-2 rounded bg-black/10 px-2">
-							<h2 class="text-sm font-medium">{shirt.keyword}</h2>
-						</div>
-					</div>
-				</Drawer.Trigger>
+			<div class="flex gap-2 px-4 py-4">
+				<Button variant="secondary" on:click={() => deleteDesign(shirt.id)}>Delete</Button>
+				<Button class="flex-1" on:click={() => publishDesign(shirt.id, shirt.artwork, shirt.title, shirt.main_tag, shirt.tags, shirt.desc)}>Upload</Button>
 			</div>
-				<Drawer.Portal>
-					<Drawer.Overlay class="fixed inset-0 bg-black/40" />
-					<Drawer.Content
-						class="fixed  bottom-0 left-0 right-0 flex max-h-[96%] flex-col rounded-t-[10px]"
-					>
-						<div
-							class=" mx-auto flex w-full max-w-md flex-col gap-4 overflow-auto rounded-t-[10px] p-4"
-						>	
-						<div class="relative">
-							<img class="rounded-lg overflow-hidden" src="https://placehold.co/400x400" />
-							<Button class="absolute bottom-2 right-2">Refresh</Button>
-						</div>
-							
-							<h2 contenteditable="true" class="font-medium">{shirt.listing_title}</h2>
-							<p contenteditable="true" >{shirt.listing_desc}</p>
-							<p contenteditable="true" >{shirt.keyword}</p>
-							<div class="flex justify-between items-center">	
-								<h3 class="text-sm font-semibold">Tags</h3>
-								<Button variant="secondary" size="sm">Refresh</Button>
-							</div>
-
-							<p contenteditable="true" >{shirt.tags}</p>
-						</div>
-						<Drawer.Footer>
-							<div
-								class="mx-auto flex w-full max-w-full flex-col gap-4 overflow-auto rounded-t-[10px] p-4"
-							>
-								<div class="flex">
-									<Button>Upload</Button>
-									<Button>Delete</Button>
-									
-									<Button variant="secondary">Cancel</Button>
-								</div>
-							</div>
-						</Drawer.Footer>
-					</Drawer.Content>
-				</Drawer.Portal>
-			</Drawer.Root
-		> -->
-
+		</div>
+	</section>
 </div>
+{:else}
+	<div class="mt-24 flex flex-col h-full px-4"><Button on:click={generateShirts}>Generate Shirts</Button></div>
+	
+{/if}

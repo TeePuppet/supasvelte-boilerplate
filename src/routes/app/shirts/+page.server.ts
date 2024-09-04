@@ -7,8 +7,9 @@ export const load: PageServerLoad = async ({ depends, locals: { supabase } }) =>
         const schema = supabase.schema('shirts');
 
         const { data: shirts, error } = await schema
-            .from('shirts')
-            .select('*')
+        .from('shirts')
+        .select('*')
+        .eq('status', 'DRAFT')
 
         if (error) {
             console.error('Error fetching websites:', error);
