@@ -81,7 +81,7 @@
 			}
 
 			const designs = await response.json();
-            console.log(designs)
+			console.log(designs);
 			generatedDesign = designs; // Assuming the API always returns an array with at least one item
 		} catch (err) {
 			console.error('Unexpected error:', err);
@@ -109,7 +109,7 @@
 		{#each sortedKeywords as item}
 			<Drawer.Root>
 				<Drawer.Trigger
-					class="flex w-full items-center justify-between rounded border px-4 py-2 text-sm"
+					class="flex w-full items-center justify-between rounded border px-4 py-2 text-sm" on:click={() => generatedDesign = undefined}
 				>
 					<h3 class="text-sm font-medium capitalize">{item.keyword}</h3>
 					<div class="text-muted-foreground">
@@ -154,7 +154,7 @@
 
 							{#if generatedDesign}
 								<Input placeholder="Design Title" value={generatedDesign.title} />
-								<Input placeholder="Keyword" value={generatedDesign.keyword} disabled />
+								<Input placeholder="Keyword" value={item.keyword} disabled />
 								<Textarea placeholder="Tags" value={generatedDesign.tags.join(', ')} />
 								<Textarea placeholder="Description" value={generatedDesign.desc} />
 							{:else}
