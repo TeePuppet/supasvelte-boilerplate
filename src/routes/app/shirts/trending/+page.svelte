@@ -137,6 +137,23 @@
 								</div>
 							</a>
 
+                            <div class="relative">
+                            
+                            {#if generatedDesign?.image_url}
+                            <Button
+                                class="absolute top-2 right-2 z-20"
+                                on:click={() => generateDesign(item.keyword, item.related_tag)}
+                                disabled={isLoading}
+                            >
+                                {#if isLoading}
+                                    <Spinner />
+                                    Generating...
+                                {:else}
+                                    Generate Again
+                                {/if}
+                            
+                            </Button>
+                            {/if}
 							<CheckeredBackground image={generatedDesign?.image_url || undefined}>
 								<Button
 									on:click={() => generateDesign(item.keyword, item.related_tag)}
@@ -151,6 +168,7 @@
 								</Button>
 								<Button variant="secondary">Upload File</Button>
 							</CheckeredBackground>
+                        </div>
 
 							{#if generatedDesign}
 								<Input placeholder="Design Title" value={generatedDesign.title} />
