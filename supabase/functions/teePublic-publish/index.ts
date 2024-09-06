@@ -23,45 +23,41 @@ Deno.serve(async (req) => {
 		//     data: $('Upload to Cloudinary').item.json,
 		// }
 
-		const { cookie, design_id, auth_token, design_title, design_desc, main_tag, tags, artwork } =
+		const { cookie, design_id, form_data } =
 			await req.json();
 
 		if (!cookie) throw new Error("'cookie' is required");
 		if (!design_id) throw new Error("'design_id' is required");
-		if (!auth_token) throw new Error("'auth_token' is required");
-		if (!artwork) throw new Error("'artwork_url' is required");
-		if (!design_title) throw new Error("'design_title' is required");
-		if (!design_desc) throw new Error("'design_desc' is required");
-		if (!main_tag) throw new Error("'main_tag' is required");
-		if (!tags) throw new Error("'main_tag' is required");
+    if (!form_data) throw new Error("'design_id' is required");
+		// if (!auth_token) throw new Error("'auth_token' is required");
+		// if (!artwork) throw new Error("'artwork_url' is required");
+		// if (!design_title) throw new Error("'design_title' is required");
+		// if (!design_desc) throw new Error("'design_desc' is required");
+		// if (!main_tag) throw new Error("'main_tag' is required");
+		// if (!tags) throw new Error("'main_tag' is required");
 
 		const design = {
 			id: design_id,
-			auth_token: auth_token,
-			title: design_title,
-			description: design_desc,
-			main_tag: main_tag,
-			secondary_tags: tags
+			form_data: form_data
 		};
 
-		const artwork_data = {
-			url: artwork.url,
-			dpi: artwork.data.image_metadata.dpi,
-			width: artwork.data.width,
-			height: artwork.data.height
-		};
+		// const artwork_data = {
+		// 	url: artwork.url,
+		// 	dpi: artwork.data.image_metadata.dpi,
+		// 	width: artwork.data.width,
+		// 	height: artwork.data.height
+		// };
 
-		const formData = await createFormData(design, artwork_data);
+		// const formData = await createFormData(design, artwork_data);
     // console.log('Form Data', formData)
 
-    const publishDesign = await publish(cookie, design.id, formData)
+    const publishDesign = await publish(cookie, design.id, form_data)
     // console.log('publish', publishDesign);
 
 		return new Response(
 			JSON.stringify({ 
         message: 'Design Uploaded',
         url: `https://www.teepublic.com/t-shirt/${design_id}`,
-        artwork_data,
       }),
 			{ headers: { 'Content-Type': 'application/json' } }
 		);
@@ -298,7 +294,6 @@ async function createFormData(design: Design, artwork: Artwork): Promise<string>
 
 async function publish(cookie, design_id, payload) {
 
-
   const url = `https://www.teepublic.com/designs/${design_id}/edit`;
   
   const response = await fetch(url, {
@@ -325,14 +320,12 @@ async function publish(cookie, design_id, payload) {
     redirect: 'manual' // This is important to handle the 302 redirect
   });
 
-
   if (response.status === 302) {
     console.log('Redirect location:', response.headers.get('location'));
     return { status: 'success', redirectUrl: response.headers.get('location') };
   }
 
   const contentType = response.headers.get("content-type");
-
 
   if (contentType && contentType.includes("application/json")) {
     return await response.json();

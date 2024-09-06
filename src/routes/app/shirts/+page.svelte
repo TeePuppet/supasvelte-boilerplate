@@ -1,10 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
-	import PageNavigation from '../components/PageNavigation.svelte';
-	import PageTitle from '../components/PageTitle.svelte';
 	import * as Drawer from '$lib/components/ui/drawer';
-	import { Portal } from '$lib/components/ui/dialog';
-	import Input from '$lib/components/ui/input/input.svelte';
+
 	import PageNav from '$lib/components/PageNav.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
@@ -20,7 +17,7 @@
 			path: '/app/shirts/trending'
 		},
 		{
-			label: 'Upload Queue',
+			label: 'Upload',
 			path: '/app/shirts/upload'
 		},
 		{
@@ -28,17 +25,20 @@
 			path: '/app/shirts/accounts'
 		}
 	];
-	// @ts-ignore
+
 	$: ({ supabase, user } = data);
-
 	export let data;
-// With these lines:
-$: newShirts = data.shirts || [];
-$: shirt = newShirts[1] || newShirts[0] || null;
+	
+	$: shirts = data.shirts || []
+	
+	$: console.log('shirt is', shirts);
 
-$: shirtImage = shirt?.artwork || ''
-$: shirtColor = "transparent"
-$: console.log('shirt is', shirt);
+	$: newShirts = data.shirts;
+	$: shirt = newShirts[0] || undefined;
+	
+	$: shirtImage = shirt.artwork || ''
+	$: shirtColor = "transparent"
+
 
 	const publishDesign = async (id:number, artwork:string, title: string, main_tag:string, tags:string[], desc:string) => {
 		const response = await fetch(

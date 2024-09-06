@@ -15,7 +15,7 @@
 			path: '/app/shirts/trending'
 		},
 		{
-			label: 'Upload Queue',
+			label: 'Upload',
 			path: '/app/shirts/upload'
 		},
 		{
