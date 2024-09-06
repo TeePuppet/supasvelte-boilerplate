@@ -3,14 +3,26 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import PageNav from '$lib/components/PageNav.svelte';
 	import * as Drawer from '$lib/components/ui/drawer';
-	import { ArrowUpDown } from 'lucide-svelte';
+	import { ArrowUpDown, Loader2 } from 'lucide-svelte';
 	import * as Select from '$lib/components/ui/select';
 	import CheckeredBackground from '$lib/components/atoms/CheckeredBackground.svelte';
+	import { Input } from '$lib/components/ui/input';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import Spinner from '$lib/components/Spinner.svelte';
 
 	interface KeywordItem {
 		keyword: string;
+		related_tag: string[];
 		number_of_items: number;
 		search_volume: number;
+	}
+
+	interface GeneratedDesign {
+		image_url: string;
+		title: string;
+		keyword: string;
+		tags: string[];
+		desc: string;
 	}
 
 	export let data: { keywords: KeywordItem[] };
@@ -19,7 +31,8 @@
 	let sortedKeywords: KeywordItem[] = [];
 	let sortField: keyof Pick<KeywordItem, 'number_of_items' | 'search_volume'> = 'number_of_items';
 	let isAscending = true;
-    $: selectedAccount = undefined
+
+	$: selectedAccount = undefined;
 	const pageNavItems = [
 		{ label: 'Designs', path: '/app/shirts/' },
 		{ label: 'Trending', path: '/app/shirts/trending' },
@@ -43,9 +56,40 @@
 	}
 
 	onMount(() => {
-		// Apply initial sort
 		sortKeywords('number_of_items');
 	});
+
+	$: generatedDesign = undefined;
+	let isLoading = false;
+
+	async function generateDesign(keyword: string, related_tags: string[]) {
+		isLoading = true;
+		try {
+			const response = await fetch('http://n8n.silviu.co.uk:5678/webhook/shirt-from-keyword', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					keyword,
+					related_tags
+				})
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const designs = await response.json();
+            console.log(designs)
+			generatedDesign = designs; // Assuming the API always returns an array with at least one item
+		} catch (err) {
+			console.error('Unexpected error:', err);
+			throw err;
+		} finally {
+			isLoading = false;
+		}
+	}
 </script>
 
 <PageNav items={pageNavItems} selected="/app/shirts/trending" />
@@ -77,9 +121,9 @@
 				<Drawer.Portal>
 					<Drawer.Overlay class="fixed inset-0 bg-black/40" />
 					<Drawer.Content
-						class="fixed bottom-0 left-0 right-0 flex max-h-[96%] flex-col rounded-t-[10px]"
+						class="ove fixed bottom-0 left-0 right-0 flex max-h-[96%] flex-col rounded-t-[10px]"
 					>
-						<div class="mx-auto flex w-full flex-col gap-4 overflow-auto rounded-t-[10px] p-4">
+						<div class="mx-auto h-full w-full space-y-2 overflow-y-scroll rounded-t-[10px] p-4">
 							<a
 								href={`https://www.teepublic.com/t-shirts?query=${encodeURIComponent(item.keyword)}`}
 								target="_blank"
@@ -92,33 +136,34 @@
 									Searches <span class="font-bold text-white">{item.search_volume}</span>
 								</div>
 							</a>
-                            
-                            <CheckeredBackground>
-                                <Button>Generate Design</Button>
-                                <Button variant="secondary">Upload File</Button>
-                            </CheckeredBackground>
 
+							<CheckeredBackground image={generatedDesign?.image_url || undefined}>
+								<Button
+									on:click={() => generateDesign(item.keyword, item.related_tag)}
+									disabled={isLoading}
+								>
+									{#if isLoading}
+										<Spinner />
+										Generating...
+									{:else}
+										Generate Design
+									{/if}
+								</Button>
+								<Button variant="secondary">Upload File</Button>
+							</CheckeredBackground>
+
+							{#if generatedDesign}
+								<Input placeholder="Design Title" value={generatedDesign.title} />
+								<Input placeholder="Keyword" value={generatedDesign.keyword} disabled />
+								<Textarea placeholder="Tags" value={generatedDesign.tags.join(', ')} />
+								<Textarea placeholder="Description" value={generatedDesign.desc} />
+							{:else}
+								<Input placeholder="Design Title" />
+								<Input placeholder="Keyword" value={item.keyword} disabled />
+								<Textarea placeholder="Tags" />
+								<Textarea placeholder="Description" />
+							{/if}
 						</div>
-						<!-- <Drawer.Footer>
-							<div
-								class="mx-auto flex w-full max-w-full flex-col gap-4 rounded-t-[10px]"
-							>
-								<Select.Root>
-									<Select.Trigger class="w-full">
-										<Select.Value placeholder="Select account" />
-									</Select.Trigger>
-									<Select.Content>
-										<Select.Item value="light">Light</Select.Item>
-										<Select.Item value="dark">Dark</Select.Item>
-										<Select.Item value="system">System</Select.Item>
-									</Select.Content>
-								</Select.Root>
-								<div class="flex w-full flex-1 gap-2">
-									<Button variant="secondary">Cancel</Button>
-									<Button class="flex-grow" disabled={!selectedAccount}>Upload</Button>
-								</div>
-							</div>
-						</Drawer.Footer> -->
 					</Drawer.Content>
 				</Drawer.Portal>
 			</Drawer.Root>
