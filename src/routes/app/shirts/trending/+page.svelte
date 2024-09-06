@@ -121,9 +121,10 @@
 				<Drawer.Portal>
 					<Drawer.Overlay class="fixed inset-0 bg-black/40" />
 					<Drawer.Content
-						class="ove fixed bottom-0 left-0 right-0 flex max-h-[96%] flex-col rounded-t-[10px]"
+						class=" fixed bottom-0 left-0 right-0 flex max-h-[96%] flex-col rounded-t-[10px]"
 					>
-						<div class="mx-auto h-full w-full space-y-2 overflow-y-scroll rounded-t-[10px] p-4">
+                    <div class="h-full overflow-y-scroll">
+						<div class="mx-auto max-w-lg w-full space-y-2 rounded-t-[10px] p-4">
 							<a
 								href={`https://www.teepublic.com/t-shirts?query=${encodeURIComponent(item.keyword)}`}
 								target="_blank"
@@ -156,6 +157,7 @@
                             {/if}
 							<CheckeredBackground image={generatedDesign?.image_url || undefined}>
 								<Button
+                                    class="z-20"
 									on:click={() => generateDesign(item.keyword, item.related_tag)}
 									disabled={isLoading}
 								>
@@ -182,6 +184,7 @@
 								<Textarea placeholder="Description" />
 							{/if}
 						</div>
+                    </div>
 					</Drawer.Content>
 				</Drawer.Portal>
 			</Drawer.Root>
