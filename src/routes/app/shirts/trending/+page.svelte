@@ -49,9 +49,15 @@
 		}
 
 		sortedKeywords = [...keywords].sort((a, b) => {
-			const aValue = a[sortField];
-			const bValue = b[sortField];
-			return isAscending ? aValue - bValue : bValue - aValue;
+			if (field === 'updated_at') {
+				const aDate = new Date(a[field]);
+				const bDate = new Date(b[field]);
+				return isAscending ? aDate.getTime() - bDate.getTime() : bDate.getTime() - aDate.getTime();
+			} else {
+				const aValue = a[field];
+				const bValue = b[field];
+				return isAscending ? aValue - bValue : bValue - aValue;
+			}
 		});
 	}
 
@@ -60,9 +66,10 @@
 	});
 
 	$: generatedDesign = undefined;
+	$: designStyle = undefined
 	let isLoading = false;
 
-	async function generateDesign(keyword: string, related_tags: string[]) {
+	async function generateDesign(keyword: string, related_tags: string[], style:string | undefined = undefined) {
 		isLoading = true;
 		try {
 			const response = await fetch('http://n8n.silviu.co.uk:5678/webhook/shirt-from-keyword', {
@@ -72,7 +79,8 @@
 				},
 				body: JSON.stringify({
 					keyword,
-					related_tags
+					related_tags,
+					...(style !== undefined && { style })
 				})
 			});
 
@@ -81,7 +89,6 @@
 			}
 
 			const designs = await response.json();
-			console.log(designs);
 			generatedDesign = designs; // Assuming the API always returns an array with at least one item
 		} catch (err) {
 			console.error('Unexpected error:', err);
@@ -97,6 +104,7 @@
 <div class="mt-6 grid w-full grid-cols-1 gap-2 px-4">
 	{#if sortedKeywords.length > 0}
 		<div class="mb-2 flex justify-end space-x-2">
+
 			<Button on:click={() => sortKeywords('number_of_items')} variant="outline" size="sm">
 				<ArrowUpDown class="mr-2 h-4 w-4" />
 				Sort by Items {sortField === 'number_of_items' ? (isAscending ? '(Asc)' : '(Desc)') : ''}
@@ -105,7 +113,13 @@
 				<ArrowUpDown class="mr-2 h-4 w-4" />
 				Sort by Searches {sortField === 'search_volume' ? (isAscending ? '(Asc)' : '(Desc)') : ''}
 			</Button>
+			<Button on:click={() => sortKeywords('updated_at')} variant="outline" size="sm">
+				<ArrowUpDown class="mr-2 h-4 w-4" />
+				Sort by Updated At {sortField === 'updated_at' ? (isAscending ? '(Asc)' : '(Desc)') : ''}
+			</Button>
 		</div>
+		<Input class="mb-2" placeholder="Style" bind:value={designStyle} />
+		<Button on:click={() => console.log(designStyle)}>Test</Button>
 		{#each sortedKeywords as item}
 			<Drawer.Root>
 				<Drawer.Trigger
@@ -143,7 +157,7 @@
                             {#if generatedDesign?.image_url}
                             <Button
                                 class="absolute top-2 right-2 z-20"
-                                on:click={() => generateDesign(item.keyword, item.related_tag)}
+                                on:click={() => generateDesign(item.keyword, item.related_tag, designStyle)}
                                 disabled={isLoading}
                             >
                                 {#if isLoading}
@@ -158,7 +172,7 @@
 							<CheckeredBackground image={generatedDesign?.image_url || undefined}>
 								<Button
                                     class="z-20"
-									on:click={() => generateDesign(item.keyword, item.related_tag)}
+									on:click={() => generateDesign(item.keyword, item.related_tag, designStyle)}
 									disabled={isLoading}
 								>
 									{#if isLoading}
@@ -174,12 +188,12 @@
 
 							{#if generatedDesign}
 								<Input placeholder="Design Title" value={generatedDesign.title} />
-								<Input placeholder="Keyword" value={item.keyword} disabled />
+								<Input placeholder="Keyword" value={item.keyword} />
 								<Textarea placeholder="Tags" value={generatedDesign.tags.join(', ')} />
 								<Textarea placeholder="Description" value={generatedDesign.desc} />
 							{:else}
 								<Input placeholder="Design Title" />
-								<Input placeholder="Keyword" value={item.keyword} disabled />
+								<Input placeholder="Keyword" value={item.keyword} />
 								<Textarea placeholder="Tags" />
 								<Textarea placeholder="Description" />
 							{/if}
