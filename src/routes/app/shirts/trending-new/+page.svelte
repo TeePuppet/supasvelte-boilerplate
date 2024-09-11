@@ -131,153 +131,23 @@
 			</Button>
 		</div>
 		<!-- <Input class="mb-2" placeholder="Style" bind:value={designStyle} /> -->
-		<section class="grid grid-cols-2 gap-4">
-			<div id="keywords">
+		<section class="grid grid-cols-1 gap-2">
 				{#each sortedKeywords as item}
-					<!-- <a href={`/app/shirts/trending/${item.keyword}`}>Go to Page</a> -->
-					<Drawer.Root>
-						<Drawer.Trigger
-							class="flex w-full items-center justify-between rounded border px-4 py-2 text-sm"
-							on:click={() => (generatedDesign = undefined)}
-						>
-							<h3 class="text-sm font-medium capitalize">{item.keyword}</h3>
-							<div class="text-muted-foreground">
-								No. items <span class="font-bold text-white">{item.number_of_items} </span>
-								Searches <span class="font-bold text-white">{item.search_volume}</span>
-							</div>
-						</Drawer.Trigger>
-
-						<Drawer.Portal>
-							<Drawer.Overlay class="fixed inset-0 bg-black/40" />
-							<Drawer.Content
-								class=" fixed bottom-0 left-0 right-0 flex max-h-[96%] flex-col rounded-t-[10px]"
-							>
-								<div class="h-full overflow-y-scroll">
-									<div class="mx-auto w-full max-w-lg space-y-2 rounded-t-[10px] p-4">
-										<a
-											href={`https://www.teepublic.com/t-shirts?query=${encodeURIComponent(item.keyword)}`}
-											target="_blank"
-											rel="noopener noreferrer"
-											class="flex items-center justify-between rounded border px-4 py-2 text-sm"
-										>
-											<h3 class="text-sm font-medium capitalize">{item.keyword}</h3>
-											<div class="text-muted-foreground">
-												No. items <span class="font-bold text-white">{item.number_of_items} </span>
-												Searches <span class="font-bold text-white">{item.search_volume}</span>
-											</div>
-										</a>
-
-										<div class="relative">
-											{#if generatedDesign?.image_url}
-												<Button
-													class="absolute right-2 top-2 z-20"
-													on:click={() =>
-														generateDesign(item.keyword, item.related_tag, designStyle)}
-													disabled={isLoading}
-												>
-													{#if isLoading}
-														<Spinner />
-														Generating...
-													{:else}
-														Generate Again
-													{/if}
-												</Button>
-											{/if}
-											<CheckeredBackground image={generatedDesign?.image_url || undefined}>
-												<Button
-													class="z-20"
-													on:click={() =>
-														generateDesign(item.keyword, item.related_tag, designStyle)}
-													disabled={isLoading}
-												>
-													{#if isLoading}
-														<Spinner />
-														Generating...
-													{:else}
-														Generate Design
-													{/if}
-												</Button>
-												<Button variant="secondary">Upload File</Button>
-											</CheckeredBackground>
-										</div>
-
-										{#if generatedDesign}
-											<Input placeholder="Design Title" value={generatedDesign.title} />
-											<Input placeholder="Keyword" value={item.keyword} />
-											<Textarea placeholder="Tags" value={generatedDesign.tags.join(', ')} />
-											<Textarea placeholder="Description" value={generatedDesign.desc} />
-										{:else}
-											<Input placeholder="Design Title" />
-											<Input placeholder="Keyword" value={item.keyword} />
-											<Textarea placeholder="Tags" />
-											<Textarea placeholder="Description" />
-										{/if}
-									</div>
-								</div>
-							</Drawer.Content>
-						</Drawer.Portal>
-					</Drawer.Root>
+					<a class="flex w-full items-center justify-start gap-2 rounded border px-4 py-2" href={`/app/shirts/trending/${item.keyword}`}>
+						<h3 class="text-sm font-medium capitalize">{item.keyword}</h3>
+						<div class="text-muted-foreground text-xs flex items-center gap-2">
+							<p class="flex items-center gap-1 bg-muted px-2 py-1 rounded border">
+								<!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shirt"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg> -->
+								<span class="font-medium">{item.number_of_items} </span>
+							</p>
+							<p class="flex items-center gap-1  bg-muted px-2 py-1 rounded border">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+								<span class="font-medium "> {item.search_volume}</span>
+							</p>
+							
+						</div>
+					</a>
 				{/each}
-			</div>
-			<div id="design">
-				<a
-					href={`https://www.teepublic.com/t-shirts?query=${encodeURIComponent(selectedkeyword.keyword)}`}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="flex items-center justify-between rounded border px-4 py-2 text-sm"
-				>
-					<h3 class="text-sm font-medium capitalize">{selectedkeyword.keyword}</h3>
-					<div class="text-muted-foreground">
-						No. items <span class="font-bold text-white">{selectedkeyword.number_of_items} </span>
-						Searches <span class="font-bold text-white">{selectedkeyword.search_volume}</span>
-					</div>
-				</a>
-				<div class="relative">
-					{#if generatedDesign?.image_url}
-						<Button
-							class="absolute right-2 top-2 z-20"
-							on:click={() =>
-								generateDesign(selectedkeyword.keyword, selectedkeyword.related_tag, designStyle)}
-							disabled={isLoading}
-						>
-							{#if isLoading}
-								<Spinner />
-								Generating...
-							{:else}
-								Generate Again
-							{/if}
-						</Button>
-					{/if}
-					<CheckeredBackground image={generatedDesign?.image_url || undefined}>
-						<Button
-							class="z-20"
-							on:click={() =>
-								generateDesign(selectedkeyword.keyword, selectedkeyword.related_tag, designStyle)}
-							disabled={isLoading}
-						>
-							{#if isLoading}
-								<Spinner />
-								Generating...
-							{:else}
-								Generate Design
-							{/if}
-						</Button>
-						<Button variant="secondary">Upload File</Button>
-					</CheckeredBackground>
-				</div>
-
-				{#if generatedDesign}
-					<Input placeholder="Design Title" value={generatedDesign.title} />
-					<Input placeholder="Keyword" value={selectedkeyword.keyword} />
-					<Textarea placeholder="Tags" value={generatedDesign.tags.join(', ')} />
-					<Textarea placeholder="Description" value={generatedDesign.desc} />
-				{:else}
-					<Input placeholder="Design Title" />
-					<Input placeholder="Keyword" value={selectedkeyword.keyword} />
-					<Textarea placeholder="Tags" />
-					<Textarea placeholder="Description" />
-				{/if}
-			</div>
 		</section>
 	{:else}
 		<p>No keywords available.</p>
