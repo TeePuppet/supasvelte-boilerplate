@@ -12,15 +12,17 @@
     let isPicking: boolean = false;
     let eyeDropper: any;
     let colorInput: HTMLInputElement;
+    let isMobile: boolean = false;
 
     onMount(() => {
         if ('EyeDropper' in window) {
             eyeDropper = new (window as any).EyeDropper();
         }
+        isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     });
 
     async function startPicking() {
-        if (eyeDropper) {
+        if (eyeDropper && !isMobile) {
             isPicking = true;
             try {
                 const result = await eyeDropper.open();
@@ -87,6 +89,9 @@
         bind:this={colorInput}
         value={selectedColor}
         on:input={handleColorInput}
-        class="hidden"
+        class={isMobile ? "" : "hidden"}
     />
+    {#if isMobile}
+        <span>Selected color: {selectedColor}</span>
+    {/if}
 </div>
