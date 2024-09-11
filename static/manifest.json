@@ -1,0 +1,17 @@
+{
+    "short_name": "Quack",
+    "name": "Quack",
+    "start_url": "/",
+    "icons": [
+        {
+            "src": "logo_512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "background_color": "#000000",
+    "display": "fullscreen",
+    "scope": "/",
+    "theme_color": "#000000",
+    "description": "Lofi to lofi beats, while using the scratchpad to list down tasks and thoughts"
+}
