@@ -119,15 +119,15 @@
 		<div class="mb-2 flex justify-end space-x-2">
 			<Button on:click={() => sortKeywords('number_of_items')} variant="outline" size="sm">
 				<ArrowUpDown class="mr-2 h-4 w-4" />
-				Sort by Items {sortField === 'number_of_items' ? (isAscending ? '(Asc)' : '(Desc)') : ''}
+				Items {sortField === 'number_of_items' ? (isAscending ? '(Least)' : '(Most)') : ''}
 			</Button>
 			<Button on:click={() => sortKeywords('search_volume')} variant="outline" size="sm">
 				<ArrowUpDown class="mr-2 h-4 w-4" />
-				Sort by Searches {sortField === 'search_volume' ? (isAscending ? '(Asc)' : '(Desc)') : ''}
+				Searches {sortField === 'search_volume' ? (isAscending ? 'Least' : 'Most') : ''}
 			</Button>
 			<Button on:click={() => sortKeywords('updated_at')} variant="outline" size="sm">
 				<ArrowUpDown class="mr-2 h-4 w-4" />
-				Sort by Updated At {sortField === 'updated_at' ? (isAscending ? '(Asc)' : '(Desc)') : ''}
+				Date{sortField === 'updated_at' ? (isAscending ? '(Oldest)' : '(Newest)') : ''}
 			</Button>
 		</div>
 		<!-- <Input class="mb-2" placeholder="Style" bind:value={designStyle} /> -->
