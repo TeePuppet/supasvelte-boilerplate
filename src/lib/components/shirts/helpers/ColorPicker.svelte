@@ -70,17 +70,19 @@
 </script>
 
 <div class="flex flex-col sm:flex-row items-center gap-4">
-    <Button class="disabled:cursor-not-allowed" variant="default" size="icon" on:click={startPicking} disabled={isPicking}>
+    <Button 
+        class="disabled:cursor-not-allowed" 
+        variant="default" 
+        size="icon" 
+        on:click={startPicking} 
+        disabled={isPicking}
+        style="background-color: {selectedColor}; color: {getContrastColor(selectedColor)};"
+    >
         {#if isPicking}
             Picking...
         {:else}
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-off">
-                <line x1="2" x2="22" y1="2" y2="22"/>
-                <path d="M10.41 10.41a2 2 0 1 1-2.83-2.83"/>
-                <line x1="13.5" x2="6" y1="13.5" y2="21"/>
-                <line x1="18" x2="21" y1="12" y2="15"/>
-                <path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"/>
-                <path d="M21 15V5a2 2 0 0 0-2-2H9"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplet">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
             </svg>
         {/if}
     </Button>
@@ -89,9 +91,26 @@
         bind:this={colorInput}
         value={selectedColor}
         on:input={handleColorInput}
-        class={isMobile ? "" : "hidden"}
+        class="hidden"
     />
-    {#if isMobile}
-        <span>Selected color: {selectedColor}</span>
-    {/if}
 </div>
+
+<script lang="ts" context="module">
+    function getContrastColor(hexcolor: string) {
+        // If a leading # is provided, remove it
+        if (hexcolor.slice(0, 1) === '#') {
+            hexcolor = hexcolor.slice(1);
+        }
+
+        // Convert to RGB value
+        var r = parseInt(hexcolor.substr(0,2),16);
+        var g = parseInt(hexcolor.substr(2,2),16);
+        var b = parseInt(hexcolor.substr(4,2),16);
+
+        // Get YIQ ratio
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+
+        // Check contrast
+        return (yiq >= 128) ? 'black' : 'white';
+    }
+</script>
