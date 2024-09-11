@@ -13,26 +13,30 @@
     let eyeDropper: any;
     let colorInput: HTMLInputElement;
     let isMobile: boolean = false;
+    let isIOS: boolean = false;
 
     onMount(() => {
         if ('EyeDropper' in window) {
             eyeDropper = new (window as any).EyeDropper();
         }
         isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     });
 
-    async function startPicking() {
+    function startPicking() {
         if (eyeDropper && !isMobile) {
             isPicking = true;
-            try {
-                const result = await eyeDropper.open();
-                selectedColor = result.sRGBHex;
-                await processImage();
-            } catch (error) {
-                console.error('EyeDropper error:', error);
-            } finally {
-                isPicking = false;
-            }
+            eyeDropper.open()
+                .then((result: { sRGBHex: string }) => {
+                    selectedColor = result.sRGBHex;
+                    processImage();
+                })
+                .catch((error: any) => {
+                    console.error('EyeDropper error:', error);
+                })
+                .finally(() => {
+                    isPicking = false;
+                });
         } else {
             colorInput.click();
         }
@@ -67,6 +71,24 @@
             alert(`Error processing image: ${error}`);
         }
     }
+
+    function getContrastColor(hexcolor: string) {
+        // If a leading # is provided, remove it
+        if (hexcolor.slice(0, 1) === '#') {
+            hexcolor = hexcolor.slice(1);
+        }
+
+        // Convert to RGB value
+        var r = parseInt(hexcolor.substr(0,2),16);
+        var g = parseInt(hexcolor.substr(2,2),16);
+        var b = parseInt(hexcolor.substr(4,2),16);
+
+        // Get YIQ ratio
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+
+        // Check contrast
+        return (yiq >= 128) ? 'black' : 'white';
+    }
 </script>
 
 <div class="flex flex-col sm:flex-row items-center gap-4">
@@ -91,26 +113,7 @@
         bind:this={colorInput}
         value={selectedColor}
         on:input={handleColorInput}
-        class="hidden"
+        class={isIOS ? "opacity-0 absolute" : "hidden"}
     />
+    <!-- <span>Selected color: {selectedColor}</span> -->
 </div>
-
-<script lang="ts" context="module">
-    function getContrastColor(hexcolor: string) {
-        // If a leading # is provided, remove it
-        if (hexcolor.slice(0, 1) === '#') {
-            hexcolor = hexcolor.slice(1);
-        }
-
-        // Convert to RGB value
-        var r = parseInt(hexcolor.substr(0,2),16);
-        var g = parseInt(hexcolor.substr(2,2),16);
-        var b = parseInt(hexcolor.substr(4,2),16);
-
-        // Get YIQ ratio
-        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-
-        // Check contrast
-        return (yiq >= 128) ? 'black' : 'white';
-    }
-</script>
