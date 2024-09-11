@@ -8,7 +8,7 @@ export async function generateDesign(
     try {
 
         console.log('keys', keyword, related_tags)
-        const response = await fetch('http://n8n.silviu.co.uk:5678/webhook/shirt-from-keyword', {
+        const response = await fetch('https://n8n.silviu.co.uk:5678/webhook/shirt-from-keyword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
