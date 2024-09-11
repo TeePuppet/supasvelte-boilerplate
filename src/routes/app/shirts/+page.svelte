@@ -23,7 +23,11 @@
 		{
 			label: 'Accounts',
 			path: '/app/shirts/accounts'
-		}
+		},
+		{
+			label: 'Trending New',
+			path: '/app/shirts/trending-new'
+		},
 	];
 
 	$: ({ supabase, user } = data);

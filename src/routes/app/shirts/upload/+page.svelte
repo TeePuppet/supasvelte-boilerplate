@@ -21,7 +21,11 @@
         { label: "Designs", path: "/app/shirts/" },
         { label: "Trending", path: "/app/shirts/trending" },
         { label: "Upload", path: "/app/shirts/upload" },
-        { label: "Accounts", path: "/app/shirts/accounts" }
+        { label: "Accounts", path: "/app/shirts/accounts" },
+        {
+			label: 'Trending New',
+			path: '/app/shirts/trending-new'
+		},
     ];
 
     interface Design {

@@ -21,7 +21,11 @@
 		{
 			label: 'Accounts',
 			path: '/app/shirts/accounts'
-		}
+		},
+		{
+			label: 'Trending New',
+			path: '/app/shirts/trending-new'
+		},
 	];
 
 	const accounts = [
