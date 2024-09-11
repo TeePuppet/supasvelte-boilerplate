@@ -71,7 +71,7 @@
 	}
 
 	onMount(() => {
-		sortKeywords('number_of_items');
+		sortKeywords('updated_at');
 	});
 
 	$: generatedDesign = undefined;
