@@ -133,7 +133,7 @@
 		<!-- <Input class="mb-2" placeholder="Style" bind:value={designStyle} /> -->
 		<section class="grid grid-cols-1 gap-2">
 				{#each sortedKeywords as item}
-					<a class="flex w-full items-center justify-start gap-2 rounded border px-4 py-2" href={`/app/shirts/trending/${item.keyword}`}>
+					<a class="flex w-full items-center justify-start gap-2 rounded border px-4 py-2" href={`/app/shirts/trending-new/${item.keyword}`}>
 						<h3 class="text-sm font-medium capitalize">{item.keyword}</h3>
 						<div class="text-muted-foreground text-xs flex items-center gap-2">
 							<p class="flex items-center gap-1 bg-muted px-2 py-1 rounded border">
