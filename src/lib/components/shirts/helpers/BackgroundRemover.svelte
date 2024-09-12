@@ -36,20 +36,15 @@
     
     async function processImage(): Promise<void> {
       try {
-        console.log('Starting image processing');
         await removeBackground(imageUrl, tolerance, expand, feather);
-        console.log('Image processing completed successfully');
       } catch (error) {
-        console.error('Error processing image:', error);
         dispatch('error', { message: error instanceof Error ? error.message : String(error) });
       }
     }
     
     async function removeBackground(imageUrl: string, tolerance: number = 180, expand: number = 2, feather: number = 1): Promise<void> {
-      console.log('Starting removeBackground with:', { imageUrl, tolerance, expand, feather });
       try {
         const img = await loadImage(imageUrl);
-        console.log('Image loaded successfully');
         
         if (!canvas) return;
         canvas.width = img.width;
@@ -63,7 +58,6 @@
         originalImageData = new Uint8ClampedArray(imageData.data);
     
         cornerColor = sampleCornersColor(ctx, canvas.width, canvas.height);
-        console.log('Most frequent corner color:', cornerColor);
     
         const [baseRed, baseGreen, baseBlue] = parseColor(cornerColor);
         mask = createTransparencyMask(imageData.data, imageData.width, imageData.height, baseRed, baseGreen, baseBlue, tolerance);
@@ -74,7 +68,6 @@
         
         applyMaskToImage(feather);
       } catch (error) {
-        console.error('Error in removeBackground:', error);
         throw error;
       }
     }
@@ -86,21 +79,33 @@
       ctx.putImageData(imageData, 0, 0);
     }
     
-    function startDrawing(e: MouseEvent): void {
+    function startDrawing(e: MouseEvent | TouchEvent): void {
       isDrawing = true;
       draw(e);
     }
     
-    function draw(e: MouseEvent): void {
+    function draw(e: MouseEvent | TouchEvent): void {
       if (!isDrawing || !ctx) return;
+  
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
-      const x = (e.clientX - rect.left) * scaleX;
-      const y = (e.clientY - rect.top) * scaleY;
-      
+      let x, y;
+  
+      // Handle touch and mouse coordinates separately
+      if (e instanceof MouseEvent) {
+        x = (e.clientX - rect.left) * scaleX;
+        y = (e.clientY - rect.top) * scaleY;
+      } else if (e instanceof TouchEvent && e.touches.length > 0) {
+        const touch = e.touches[0];
+        x = (touch.clientX - rect.left) * scaleX;
+        y = (touch.clientY - rect.top) * scaleY;
+      } else {
+        return;
+      }
+  
       updateMask(x, y);
-      
+  
       // Visualize the brush
       ctx.save();
       ctx.beginPath();
@@ -146,50 +151,56 @@
         stopDrawing();
       }
     }
-    </script>
-    
-    <div class="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md">
-      <canvas
-        bind:this={canvas}
-        on:mousedown={startDrawing}
-        on:mousemove={draw}
-        on:mouseup={stopDrawing}
-        on:mouseout={stopDrawing}
-        on:blur={stopDrawing}
-        on:keydown={handleKeyDown}
-        tabindex="0"
-        class="border border-gray-300 max-w-full"
-      ></canvas>
-      <div class="mt-4 flex items-center space-x-4">
-        <button
-          on:click={() => setBrushMode('remove')}
-          class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-        >
-          Remove
-        </button>
-        <button
-          on:click={() => setBrushMode('restore')}
-          class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-        >
-          Restore
-        </button>
-        <div class="flex items-center space-x-2">
-          <input
-            type="range"
-            min="1"
-            max="50"
-            bind:value={brushRadius}
-            on:input={updateBrushSize}
-            class="w-32"
-          />
-          <span class="text-sm text-gray-600">{brushRadius}px</span>
-        </div>
+  </script>
+  
+  <!-- Canvas and UI controls -->
+  <div class="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md">
+    <canvas
+      bind:this={canvas}
+      on:mousedown={startDrawing}
+      on:mousemove={draw}
+      on:mouseup={stopDrawing}
+      on:mouseout={stopDrawing}
+      on:blur={stopDrawing}
+      on:touchstart|preventDefault={startDrawing}  
+      on:touchmove|preventDefault={draw}           
+      on:touchend|preventDefault={stopDrawing} 
+      tabindex="0"
+      class="border border-gray-300 max-w-full"
+    ></canvas>
+  
+    <div class="mt-4 flex items-center space-x-4">
+      <button
+        on:click={() => setBrushMode('remove')}
+        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+      >
+        Remove
+      </button>
+      <button
+        on:click={() => setBrushMode('restore')}
+        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+      >
+        Restore
+      </button>
+      <div class="flex items-center space-x-2">
+        <input
+          type="range"
+          min="1"
+          max="50"
+          bind:value={brushRadius}
+          on:input={updateBrushSize}
+          class="w-32"
+        />
+        <span class="text-sm text-gray-600">{brushRadius}px</span>
       </div>
-      {#if cornerColor}
-        <div class="mt-4 flex items-center space-x-2">
-          <span class="text-sm text-gray-600">Detected background color:</span>
-          <div class="w-6 h-6 border border-gray-300" style="background-color: {cornerColor};"></div>
-          <span class="text-sm font-mono">{cornerColor}</span>
-        </div>
-      {/if}
     </div>
+    
+    {#if cornerColor}
+      <div class="mt-4 flex items-center space-x-2">
+        <span class="text-sm text-gray-600">Detected background color:</span>
+        <div class="w-6 h-6 border border-gray-300" style="background-color: {cornerColor};"></div>
+        <span class="text-sm font-mono">{cornerColor}</span>
+      </div>
+    {/if}
+  </div>
+  
