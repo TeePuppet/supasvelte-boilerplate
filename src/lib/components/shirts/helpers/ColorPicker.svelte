@@ -1,7 +1,7 @@
 <script lang="ts">
     import Button from '$lib/components/ui/button/button.svelte';
     import { onMount } from 'svelte';
-    import { removeBackground } from '$lib/utils/shirts/removeBackground';
+    // import { removeBackground } from '$lib/utils/shirts/removeBackground';
     import { generatedDesigns, type generatedDesign } from '$lib/utils/shirts/stores';
 
     export let design: generatedDesign;

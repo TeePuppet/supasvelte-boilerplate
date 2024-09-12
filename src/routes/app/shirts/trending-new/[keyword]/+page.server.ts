@@ -17,6 +17,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
 			console.error('Error fetching keyword:', error);
 			return { keyword: null };
 		}
+
+		
 		return { keyword: data };
 	} catch (e) {
 		console.error('Unexpected error:', e);

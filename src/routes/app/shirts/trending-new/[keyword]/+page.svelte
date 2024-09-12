@@ -10,6 +10,8 @@
     import { analyzeTopRankingPatterns, type ShirtData, type Analysis } from '$lib/utils/shirts/analyzeKeyword';
     import { onMount } from 'svelte';
     import { selectedKeywordStore } from '$lib/utils/shirts/stores';
+	import BackgroundRemover from '$lib/components/shirts/helpers/BackgroundRemover.svelte';
+
 
     interface KeywordData {
         keyword: string;
@@ -59,7 +61,15 @@
 </PageNav>
 
 <section class="relative grid md:grid-cols-5 grid-cols-1 gap-1 px-4">
-    <Artwork class="col-span-3"/>
+    <!-- <Artwork class="col-span-3"/>-->
+
+    <BackgroundRemover 
+  imageUrl="https://fal.media/files/koala/KfaA1CGT8Hd8gwIepjYfT.png"
+  tolerance={180}
+  expand={2}
+  feather={1}
+/>
+
 
     <!-- Uncomment this section if you want to display the input fields and analysis results -->
     <!-- 
