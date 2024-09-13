@@ -52,7 +52,7 @@
   }
 
   function zoomIn() {
-    if (zoomLevel < 3) {
+    if (zoomLevel < 5) {
       zoomLevel *= 1.2;
       applyZoom();
     }
@@ -67,8 +67,7 @@
 
   function applyZoom() {
     if (canvas) {
-      const center = new Point(canvas.getWidth() / 2, canvas.getHeight() / 2);
-      canvas.zoomToPoint(center, zoomLevel);
+      canvas.setZoom(zoomLevel);
       canvas.renderAll();
     }
   }
@@ -85,8 +84,58 @@
 
   onMount(() => {
     if (browser) {
-      // Create the fabric canvas instance
-      canvas = new Canvas(canvasElement);
+      // Create the fabric canvas instance with touch gesture support
+      canvas = new Canvas(canvasElement, {
+        allowTouchScrolling: true,
+        stopContextMenu: true
+      });
+
+      // Enable touch gestures
+      canvas.on('mouse:wheel', function(opt: { e: WheelEvent }) {
+        const delta = opt.e.deltaY;
+        let zoom = canvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > 5) zoom = 5;
+        if (zoom < 0.5) zoom = 0.5;
+        canvas.zoomToPoint(new Point(opt.e.offsetX, opt.e.offsetY), zoom);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+      });
+
+      // Handle pinch-to-zoom
+      let lastDistance = 0;
+      (canvas as any).on('touch:start', function(opt: { e: TouchEvent }) {
+        if (opt.e.touches && opt.e.touches.length === 2) {
+          lastDistance = Math.hypot(
+            opt.e.touches[0].clientX - opt.e.touches[1].clientX,
+            opt.e.touches[0].clientY - opt.e.touches[1].clientY
+          );
+        }
+      });
+
+      (canvas as any).on('touch:move', function(opt: { e: TouchEvent }) {
+        if (opt.e.touches && opt.e.touches.length === 2) {
+          const distance = Math.hypot(
+            opt.e.touches[0].clientX - opt.e.touches[1].clientX,
+            opt.e.touches[0].clientY - opt.e.touches[1].clientY
+          );
+          const midPoint = new Point(
+            (opt.e.touches[0].clientX + opt.e.touches[1].clientX) / 2,
+            (opt.e.touches[0].clientY + opt.e.touches[1].clientY) / 2
+          );
+          const scale = distance / lastDistance;
+          let newZoom = canvas.getZoom() * scale;
+          if (newZoom > 5) newZoom = 5;
+          if (newZoom < 0.5) newZoom = 0.5;
+          canvas.zoomToPoint(midPoint, newZoom);
+          lastDistance = distance;
+        } else if (opt.e.touches && opt.e.touches.length === 1) {
+          // Handle panning
+          const touch = opt.e.touches[0];
+          const delta = new Point(touch.clientX - touch.clientX, touch.clientY - touch.clientY);
+          canvas.relativePan(delta);
+        }
+      });
 
       // Call resizeCanvas on window resize
       window.addEventListener('resize', resizeCanvas);
@@ -119,6 +168,7 @@
     width: 100%;
     position: relative;
     overflow: hidden;
+    touch-action: none;
   }
   :global(.canvas-container canvas) {
     width: 100% !important;
@@ -139,7 +189,7 @@
 <div class="canvas-container" bind:this={containerElement}>
   <canvas bind:this={canvasElement}></canvas>
   <div class="zoom-controls">
-    <button class="text-red" on:click={zoomIn}>+</button>
-    <button class="text-red" on:click={zoomOut}>-</button>
+    <button on:click={zoomIn}>+</button>
+    <button on:click={zoomOut}>-</button>
   </div>
 </div>
