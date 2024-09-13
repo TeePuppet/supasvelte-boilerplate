@@ -10,6 +10,7 @@
     import { analyzeTopRankingPatterns, type ShirtData, type Analysis } from '$lib/utils/shirts/analyzeKeyword';
     import { onMount } from 'svelte';
     import { selectedKeywordStore } from '$lib/utils/shirts/stores';
+	import Canvas from '$lib/components/shirts/helpers/Canvas.svelte';
 	// import BackgroundRemover from '$lib/components/shirts/helpers/BackgroundRemover.svelte';
 
 
@@ -30,15 +31,16 @@
 
     $: keyword = $selectedKeywordStore || {};
     $: isKeywordLoaded = !!keyword.keyword;
+
+
 </script>
 
 <PageNav variant="secondary">
     <div slot="secondary" class="flex justify-start gap-2">
         {#if isKeywordLoaded}
-            <Button variant="secondary" size="sm" class="capitalize" disabled>{keyword.keyword}</Button>
+            <Button variant="secondary" class="capitalize">{keyword.keyword}</Button>
             <Button
                 variant="secondary"
-                size="sm"
                 class="capitalize"
                 href={`https://www.teepublic.com/t-shirts?query=${keyword.keyword}`}
                 target="_blank"
@@ -47,7 +49,6 @@
             </Button>
             <Button
                 variant="secondary"
-                size="sm"
                 class="capitalize"
                 href={`https://www.google.ro/search?q=${keyword.keyword}`}
                 target="_blank"
@@ -61,13 +62,18 @@
 </PageNav>
 
 <section class="relative grid md:grid-cols-5 grid-cols-1 gap-1 px-4">
-    <Artwork/>
+    <Canvas imageUrl="https://fal.media/files/elephant/esAQWWgJ4zfKwFsSnDjQH.png"/>
 
+    <!-- <Artwork/> -->
 
-    <!-- Uncomment this section if you want to display the input fields and analysis results -->
-    <!-- 
-    <div class="flex flex-col gap-2 col-span-2">
-        <ScrollArea class="h-72">
+    <!-- <BackgroundRemover 
+  imageUrl="https://fal.media/files/koala/KfaA1CGT8Hd8gwIepjYfT.png"
+  tolerance={180}
+  expand={2}
+  feather={1}
+/> -->
+    
+    <!-- <div class="flex flex-col gap-2 col-span-2">
             <Input placeholder="Design Title" bind:value={design.title} />
             <Input placeholder="Keyword" bind:value={design.main_tag} />
             <Textarea placeholder="Tags" bind:value={design.secondary_tags} />
@@ -79,7 +85,6 @@
                     <li>{recommendation}</li>
                 {/each}
             </ul>
-        </ScrollArea>
-    </div>
-    -->
+    </div> -->
+   
 </section>
