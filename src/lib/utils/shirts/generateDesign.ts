@@ -26,6 +26,8 @@ export async function generateDesign(
         }
 
         const designs = await response.json();
+
+        const formattedDesigns = JSON.parse(designs.images)
         generatedDesigns.set(JSON.parse(designs.images));
         designMetadata.set({
             title: designs.title,

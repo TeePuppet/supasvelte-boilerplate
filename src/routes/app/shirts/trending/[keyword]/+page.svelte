@@ -18,6 +18,7 @@
 	import { selectedKeywordStore } from '$lib/utils/shirts/stores';
 	import { getImageAnalysis, removeBackground } from '$lib/utils/shirts/removeBackground';
 	import Label from '$lib/components/ui/label/label.svelte';
+	import AutoScalingTextarea from '$lib/components/atoms/AutoScalingTextarea.svelte';
 
 	$: images = [
 		{
@@ -66,6 +67,7 @@
 	const removebg = async () => {
 		isProcessing = true;
 		try {
+            //Upscale
 			const bg = await getImageAnalysis(metadata.artwork);
 			metadata.product_color = bg.dominantColor;
 
@@ -114,7 +116,7 @@
 	</div>
 </PageNav>
 
-<section class="relative grid grid-cols-1 gap-6 px-4 md:grid-cols-2">
+<section class="relative grid grid-cols-1 gap-6 px-4 md:grid-cols-2 pb-8">
 	<section id="image" class="relative col-span-1 aspect-square ">
 		{#if isProcessing}
 			<div class="absolute top-0 flex h-full w-full items-center justify-center bg-black/80">
@@ -124,22 +126,23 @@
 		{/if}
 
 		{#if images.length > 0}
+        <div class="relative">
 			<!-- svelte-ignore a11y-img-redundant-alt -->
 			<img
 				class="bg-checkered w-full rounded-md"
 				style={`background-color: ${imageBg}`}
 				src={metadata.artwork}
 				alt="Processed image"
+                draggable="false"
 			/>
-			<!-- <Button
+			<Button
+            variant="secondary"
 				size="icon"
-				class="absolute right-2 top-2"
+				class="absolute right-2 bottom-2"
 				disabled={isProcessing}
-				on:click={() => removebg()}><ImageOff /></Button
+				on:click={() => removebg()}><ImageOff size={20}/></Button
 			>
-			<Button size="icon" class="absolute bottom-2 right-2" disabled={isProcessing}
-				><RefreshCcw /></Button
-			> -->
+        </div>
             <div class="grid grid-cols-4 gap-2 mt-2">
                 {#each images as image, i}
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -150,6 +153,7 @@
                         src={image.url}
                         on:click={() => metadata.artwork = image.url}
                         alt={metadata.title}
+                        draggable="false"
                     />
                 {/each}
             </div>
@@ -161,9 +165,9 @@
 		{/if}
 	</section>
 
-	<section id="metadata" class="col">
-		<div class="flex items-center justify-between gap-2">
-			<Input class="w-full" placeholder="Title" bind:value={metadata.title} />
+	<section id="metadata" class="border rounded-md p-4">
+		<div class="flex items-start justify-between gap-2">
+            <AutoScalingTextarea class="text-lg font-medium" placeholder="Title" bind:value={metadata.title} />
 			<Button
 				variant="ghost"
 				size="icon"
@@ -175,7 +179,7 @@
 			</Button>
 		</div>
 		<div class="flex items-center justify-between gap-2">
-			<Input class="w-full" placeholder="Color" bind:value={metadata.product_color} />
+            <AutoScalingTextarea placeholder="Color" bind:value={metadata.product_color} />
 			<Button
 				variant="ghost"
 				size="icon"
@@ -188,42 +192,44 @@
 			</Button>
 		</div>
 		<div class="flex items-center justify-between gap-2">
-			<Input class="w-full" placeholder="Main Tag" bind:value={metadata.main_tag} />
+            <AutoScalingTextarea placeholder="Main Tag" bind:value={metadata.main_tag} />
 			<Button
 				variant="ghost"
 				size="icon"
 				on:click={() => {
-					navigator.clipboard.writeText(imageBg);
+					navigator.clipboard.writeText(metadata.main_tag);
 				}}
 			>
 				<ClipboardCopy size={16} />
 			</Button>
 		</div>
 		<div class="flex items-center justify-between gap-2">
-			<Textarea class="w-full" placeholder="Tags" bind:value={metadata.tags} />
+            <AutoScalingTextarea placeholder="Tags" bind:value={metadata.tags}/>
 			<Button
 				variant="ghost"
 				size="icon"
 				on:click={() => {
-					navigator.clipboard.writeText(imageBg);
+					navigator.clipboard.writeText(metadata.tags.toString());
 				}}
 			>
 				<ClipboardCopy size={16} />
 			</Button>
 		</div>
-		<div class="flex items-center justify-between gap-2">
-			<Textarea class="w-full" placeholder="Description" bind:value={metadata.desc} />
+		<div class="flex items-start justify-between gap-2">
+            <AutoScalingTextarea placeholder="Description" bind:value={metadata.desc}/>
 			<Button
 				variant="ghost"
 				size="icon"
 				on:click={() => {
-					navigator.clipboard.writeText(imageBg);
+					navigator.clipboard.writeText(metadata.desc);
 				}}
 			>
 				<ClipboardCopy size={16} />
 			</Button>
 		</div>
 	</section>
+
+    <Button>Save</Button>
 </section>
 
 <style>
